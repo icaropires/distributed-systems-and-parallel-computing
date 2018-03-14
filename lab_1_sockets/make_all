@@ -1,0 +1,2 @@
+#!/bin/bash
+ls src | xargs -I @ ./.make_file src/@
