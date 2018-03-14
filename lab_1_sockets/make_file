@@ -6,11 +6,8 @@ BASE_NAME_WITHOUT_EXTENSION=${BASE_NAME%.*}
 
 FLAGS="-pedantic -Wall -std=c11 -I./sockets"
 
-rm -rf obj &&
-rm -rf bins &&
-
-mkdir obj &&
-mkdir bins &&
+mkdir -p obj &&
+mkdir -p bins &&
 
 OBJ_FILE="obj/$BASE_NAME_WITHOUT_EXTENSION.o"
 COMPILE="gcc $FLAGS"

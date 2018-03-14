@@ -6,7 +6,7 @@ int main(int argc, char *argv[]){
 		int sfd = create_socket(AF_INET, SOCK_DGRAM, 0);
 		SocketAddress server_address = get_server_address(argv[1], argv[2]);
 
-		bind_socket(sfd, (struct sockaddr *) & server_address, sizeof(server_address));
+		bind_socket(sfd, (struct sockaddr *) &server_address, sizeof(server_address));
 
 		printf("Listening to %s:%s. Waiting for messages...\n", argv[1], argv[2]);
 		while(1){
