@@ -13,6 +13,7 @@ OBJ_FILE="obj/$BASE_NAME_WITHOUT_EXTENSION.o"
 COMPILE="gcc $FLAGS"
 
 $COMPILE -c sockets/sockets.c -o obj/sockets.o &&
+$COMPILE -c utils/utils.c -o obj/utils.o &&
 $COMPILE -c $FILE_NAME -o $OBJ_FILE &&
 
-$COMPILE obj/sockets.o $OBJ_FILE -o bins/$BASE_NAME_WITHOUT_EXTENSION
+$COMPILE obj/utils.o obj/sockets.o $OBJ_FILE -o bins/$BASE_NAME_WITHOUT_EXTENSION

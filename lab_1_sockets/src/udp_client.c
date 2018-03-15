@@ -1,8 +1,6 @@
 #include "../sockets/sockets.h"
 #include "../utils/utils.h"
 
-Package get_filled_package();
-
 int main(int argc, char *argv[]){
 	if(argc == 3){
 		SocketAddress client_address = get_client_address();
@@ -25,16 +23,4 @@ int main(int argc, char *argv[]){
 	}
 
 	return 0;
-}
-
-Package get_filled_package(){
-	int a = 0;
-	int b = 0;
-	char operator = '@';
-
-	printf("Insert operands and operation. Ex: 1 + 2:\n");
-	scanf("%d %c %d", &a, &operator, &b);
-
-	Package package = {a, b, operator};
-	return package;
 }
