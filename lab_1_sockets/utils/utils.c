@@ -54,5 +54,9 @@ int multiply(int a, int b){
 }
 
 int divide (int a, int b){
-	return a / b;
+	if(b != 0)
+		return a / b;
+
+	fprintf(stderr, "Can't divide by zero :'(\n");
+	return -1;
 }
