@@ -2,6 +2,7 @@
 #define UTILS_H_
 
 #include <stdio.h>
+#include <unistd.h>
 
 typedef struct pdu {
     int a;
