@@ -40,24 +40,20 @@ void bind_socket(int socket, const struct sockaddr *address, socklen_t address_l
 	}
 }
 
-void get_message_from(int sfd, const struct sockaddr *address, socklen_t address_len, char* msg){
-	memset(msg, 0, MAX_SIZE_MSG);
-
-	int bytes_received = recvfrom(sfd, msg, MAX_SIZE_MSG, 0, (struct sockaddr *) address, &address_len);
+void get_message_from(int sfd, const struct sockaddr *address, socklen_t address_len, Package *package){
+	int bytes_received = recvfrom(sfd, package, sizeof(Package), 0, (struct sockaddr *) address, &address_len);
 
 	if (bytes_received == 0){
-		fprintf(stderr, "No message received.\n");
+		fprintf(stderr, "No package received.\n");
 	} else if (bytes_received < 0){
-		perror("Couldn't receive message.");	
+		perror("Couldn't receive package.");	
 	}
 }
 
-void send_message_to(int sfd, const void *message, size_t lenght,
+void send_message_to(int sfd, const Package *package, size_t lenght,
                      int flags, const struct sockaddr *dest_addr, socklen_t dest_len){
-    int bytes_sended = sendto(sfd, message, sizeof(message), 0, dest_addr, dest_len);
+    int bytes_sended = sendto(sfd, package, sizeof(Package), 0, dest_addr, dest_len);
 
     if (bytes_sended < 0)
-        perror("Couldn't send message");
-    else
-        printf("Message sent!\n");
+        perror("Couldn't send package");
 }

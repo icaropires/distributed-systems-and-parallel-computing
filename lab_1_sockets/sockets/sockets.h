@@ -6,8 +6,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-
-#define MAX_SIZE_MSG 100
+#include "../utils/utils.h"
 
 typedef struct sockaddr_in SocketAddress;
 
@@ -19,9 +18,8 @@ int create_socket(int domain, int type, int protocol);
 
 void bind_socket(int socket, const struct sockaddr *address, socklen_t address_len);
 
-void get_message_from(int sfd, const struct sockaddr *address, socklen_t address_len, char *msg);
+void get_message_from(int sfd, const struct sockaddr *address, socklen_t address_len, Package *package);
 
-
-void send_message_to(int sfd, const void *message, size_t lenght, int flags, const struct sockaddr *dest_addr, socklen_t dest_len);
+void send_message_to(int sfd, const Package *package, size_t lenght, int flags, const struct sockaddr *dest_addr, socklen_t dest_len);
 
 #endif  // SOCKETS_H_
