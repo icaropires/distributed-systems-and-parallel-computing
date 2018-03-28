@@ -8,36 +8,40 @@ public class OperationClient {
     public static void main(String[] args) throws RemoteException, NotBoundException, MalformedURLException {
 		String host = "";
 
+		if (System.getSecurityManager() == null) {
+			System.setSecurityManager(new SecurityManager());
+		}
 		try{
 			host = args[0];
 		} catch (ArrayIndexOutOfBoundsException e){
 			throw new IllegalArgumentException("You must provide the host as argument. Ex: java OperationClient localhost");	
 		}
 
+		Operation operation = OperationClient.connect(host);
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("Insert an mathematical operation. Ex: 1 + 2:");
         int a = scanner.nextInt();
 
-        String string = scanner.next();
+        String operator = scanner.next();
         int b = scanner.nextInt();
         scanner.close();
 
-        Operation operation = OperationClient.connect(host);
         operation.set_operands(a, b);
 
-        int result = OperationClient.calculate(a, b, string, operation);
+        int result = OperationClient.compute(operation, operator);
         System.out.println("Result: " + result);
     }
 
     private static Operation connect(String host) throws RemoteException, NotBoundException, MalformedURLException {
-        Operation operation = (Operation) Naming.lookup("rmi://" + host + "/Operation");
+		Operation operation = (Operation) Naming.lookup("rmi://" + host + "/Operation");
 
         return operation;
     }
 
-    private static int calculate(int a, int b, String string, Operation operation) throws IllegalArgumentException, RemoteException {
+    private static int compute(Operation operation, String operator) throws IllegalArgumentException, RemoteException {
         int result = -1;
-        switch (string) {
+        switch (operator) {
             case "+": {
                 result = operation.sum();
                 break;
@@ -55,7 +59,7 @@ public class OperationClient {
                 break;
             }
             default: {
-                throw new IllegalArgumentException("Can't calculate. Invalid operator");
+                throw new IllegalArgumentException("Can't compute. Invalid operator");
             }
         }
         return result;
