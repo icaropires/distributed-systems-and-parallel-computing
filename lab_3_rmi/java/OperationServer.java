@@ -8,6 +8,9 @@ import java.rmi.RemoteException;
 public class OperationServer {
     public static void main(String[] args) throws RemoteException, AlreadyBoundException, MalformedURLException, UnknownHostException {
 
+		String current_directory = System.getProperty("user.dir");
+		System.setProperty("java.security.policy", "file://" + current_directory + "/server.policy");
+
 		if (System.getSecurityManager() == null) {
 			System.setSecurityManager(new SecurityManager());
 		}

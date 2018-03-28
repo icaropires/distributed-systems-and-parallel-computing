@@ -8,9 +8,13 @@ public class OperationClient {
     public static void main(String[] args) throws RemoteException, NotBoundException, MalformedURLException {
 		String host = "";
 
+		String current_directory = System.getProperty("user.dir");
+		System.setProperty("java.security.policy", "file:///" + current_directory + "/client.policy");
+
 		if (System.getSecurityManager() == null) {
 			System.setSecurityManager(new SecurityManager());
 		}
+
 		try{
 			host = args[0];
 		} catch (ArrayIndexOutOfBoundsException e){

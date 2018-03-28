@@ -1,0 +1,10 @@
+#!/bin/bash
+
+FOLDER_NAME="Operation"
+
+mkdir -p $FOLDER_NAME
+
+echo -e "grant codeBase \"file:$PWD/$FOLDER_NAME\" {\n	permission java.security.AllPermission;\n};" > $FOLDER_NAME/server.policy
+cat $FOLDER_NAME/server.policy > $FOLDER_NAME/client.policy
+
+javac *.java -d $FOLDER_NAME

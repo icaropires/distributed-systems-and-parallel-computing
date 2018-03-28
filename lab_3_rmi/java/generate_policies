@@ -1,5 +1,0 @@
-#!/bin/bash
-
-echo -e "grant codeBase \"file:$PWD\" {\n	permission java.security.AllPermission;\n};" > server.policy
-
-cat server.policy > client.policy
