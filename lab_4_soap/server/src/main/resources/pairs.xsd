@@ -1,0 +1,46 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://spring.io/guides/gs-producing-web-service"
+           targetNamespace="http://spring.io/guides/gs-producing-web-service" elementFormDefault="qualified">
+
+    <xs:element name="pairInRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="key" type="xs:string"/>
+                <xs:element name="value" type="tns:operation"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="pairInResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="key" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="pairOutRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="key" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="pairOutResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="value" type="tns:operation"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="operation">
+        <xs:choice>
+            <xs:element name="column" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="line" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="coordinates" type="xs:integer" minOccurs="2" maxOccurs="2"/>
+            <xs:element name="calculated" type="xs:integer"/>
+        </xs:choice>
+    </xs:complexType>
+
+</xs:schema>
