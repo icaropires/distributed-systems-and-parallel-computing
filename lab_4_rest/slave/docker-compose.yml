@@ -6,7 +6,7 @@ services:
     build: .
     volumes:
       - .:/home/slave
-    command: python manage.py runserver  0.0.0.0:8000
+    command: python manage.py runserver  0.0.0.0:8002
     depends_on:
       - migrate
     ports:
