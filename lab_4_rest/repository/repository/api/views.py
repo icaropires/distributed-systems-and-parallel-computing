@@ -16,11 +16,27 @@ class PairViewSet(viewsets.ModelViewSet):
 
         data = None
         if key:
-            pair = self.queryset.get(key=key)
-            pair = self.serializer_class(pair)
+            pair = self.queryset.filter(key=key).last()
+            pair.delete()
 
-            data = pair.data
+            pair_serialized = self.serializer_class(pair)
+            data = pair_serialized.data
         else:
-            raise ValueError('An key must be provided')
+            raise ValueError('A key must be provided')
+
+        return Response(data)
+
+    @action(methods=['get'], detail=False)
+    def readPair(self, request, pk=None):
+        key = request.query_params['key']
+
+        data = None
+        if key:
+            pair = self.queryset.filter(key=key).last()
+
+            pair_serialized = self.serializer_class(pair)
+            data = pair_serialized.data
+        else:
+            raise ValueError('A key must be provided')
 
         return Response(data)
