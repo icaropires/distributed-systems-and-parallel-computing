@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  web:
+    container_name: 'repository_web'
+    build: .
+    volumes:
+      - .:/home/repository
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - migrate
+    ports:
+      - "8001:8001"
+    tty: True
+
+  migrate:
+    container_name: 'repository_migrate'
+    build: .
+    volumes:
+      - .:/home/repository
+    command: python manage.py migrate
+    depends_on:
+      - migrations
+    tty: True
+
+  migrations:
+    container_name: 'repository_migrations'
+    build: .
+    volumes:
+      - .:/home/repository
+    command: python manage.py makemigrations
+    tty: True

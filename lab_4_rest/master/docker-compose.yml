@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  web:
+    container_name: 'master_web'
+    build: .
+    volumes:
+      - .:/home/master
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - migrate
+    ports:
+      - "8000:8000"
+    tty: True
+
+  migrate:
+    container_name: 'master_migrate'
+    build: .
+    volumes:
+      - .:/home/master
+    command: python manage.py migrate
+    depends_on:
+      - migrations
+    tty: True
+
+  migrations:
+    container_name: 'master_migrations'
+    build: .
+    volumes:
+      - .:/home/master
+    command: python manage.py makemigrations
+    tty: True
