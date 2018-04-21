@@ -1,5 +1,5 @@
 from sys import stderr
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Pair
@@ -10,13 +10,12 @@ class PairViewSet(viewsets.ModelViewSet):
 
     serializer_class = PairSerializer
     queryset = Pair.objects.all()
-    response = None
 
     @action(methods=['get'], detail=False)
     def pairOut(self, request, pk=None):
         response = self._get_get_pair_reponse(request)
 
-        if response.status_code == 200:
+        if response.status_code == status.HTTP_200_OK:
             pairs = self.queryset.filter(key=request.query_params['key'])
             pairs.last().delete()
 
@@ -28,18 +27,29 @@ class PairViewSet(viewsets.ModelViewSet):
 
         return response
 
+    @action(methods=['post'], detail=False)
+    def pairIn(self, request, pk=None):
+        data = request.data
+        serialized_data = self.serializer_class(data=data)
+
+        if serialized_data.is_valid():
+            serialized_data.save()
+            return Response({'status': data}, status.HTTP_201_CREATED)
+
+        return Response(serialized_data.errors, status.HTTP_400_BAD_REQUEST)
+
     def _get_get_pair_reponse(self, request):
         try:
             data = self._get_pair_data(request)
 
             if data:
-                response = Response(data, 200)
+                response = Response(data, status.HTTP_200_OK)
             else:
-                response = Response(None, 404)
+                response = Response(None, status.HTTP_404_NOT_FOUND)
 
         except ValueError:
             print('A key must be provided', file=stderr)
-            response = Response(None, 400)
+            response = Response(None, status.HTTP_400_BAD_REQUEST)
 
         return response
 
