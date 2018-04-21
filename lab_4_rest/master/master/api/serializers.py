@@ -6,4 +6,7 @@ class MatrixSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Matrix
-        fields = ['matrix']
+        fields = [
+            'name',
+            'matrix'
+        ]

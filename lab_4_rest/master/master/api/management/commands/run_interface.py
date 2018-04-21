@@ -7,23 +7,27 @@ from api.models import Matrix
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
-        print('\n--------------------------------')
-        print('Insira a opção desejada')
-        print('1. Registrar matriz')
-        selection = input()
+        while True:
+            print('\n--------------------------------')
+            print('Insira a opção desejada. Insira EXIT para sair')
+            print('1. Registrar matriz')
+            selection = input()
 
-        options = {
-            '1': self.register_matrix
-        }
+            if selection == 'EXIT':
+                options = {
+                    '1': self.register_matrix,
+                }
 
-        selected_option = options[selection]
-        selected_option()
-
-        self.handle(*args, **kwargs)
+                selected_option = options[selection]
+                selected_option()
+            else:
+                break
 
     @staticmethod
     def register_matrix():
-        print('Insira a matrix linha por linha')
+        name = input('Insira o nome para a matriz:')
+
+        print('\nInsira a matrix linha por linha')
         print('Separe os elementos por espaço.'
               ' Use uma linha em branco para finalizar a inserção')
 
@@ -31,7 +35,7 @@ class Command(BaseCommand):
         matrix = Command.matrix_to_string(matrix)
 
         try:
-            matrix = Matrix.objects.create(matrix=matrix)
+            matrix = Matrix.objects.create(name=name, matrix=matrix)
             print('Matriz registrada com sucesso!')
         except ValidationError:
             CommandError('Não foi possível registrar a matriz')

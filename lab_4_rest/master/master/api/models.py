@@ -25,6 +25,11 @@ def validate_matrix(string_matrix):
 
 class Matrix(models.Model):
 
+    name = models.CharField(
+        max_length=20,
+        unique=True
+    )
+
     matrix = models.CharField(
         max_length=MATRIX_SIZE,
         validators=[validate_matrix]
