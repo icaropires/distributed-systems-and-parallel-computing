@@ -1,4 +1,6 @@
 import time
+import os
+from multiprocessing import Process
 from slave import Slave
 
 
@@ -6,8 +8,7 @@ REPOSITORY_BASE_URL = 'http://192.168.182.5:8001/api/'
 HTTP_404_NOT_FOUND = 404
 
 
-if __name__ == '__main__':
-    url = REPOSITORY_BASE_URL
+def run_slave(url):
     slave = Slave(url)
 
     while True:
@@ -18,5 +19,17 @@ if __name__ == '__main__':
             print()
         else:
             print()
-            print('No tasks found! Sleeping for 2 second...')
+            print('PID {}: No tasks found! Sleeping for 2 second...'
+                  .format(os.getpid()))
             time.sleep(2)
+
+
+if __name__ == '__main__':
+    NUMBER_OF_SLAVES = 10
+    url = REPOSITORY_BASE_URL
+
+    for _ in range(NUMBER_OF_SLAVES):
+        p = Process(target=run_slave, args=(url,))
+        p.start()
+
+    p.join()

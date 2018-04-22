@@ -1,4 +1,5 @@
 import requests
+import os
 from functools import wraps
 
 
@@ -23,7 +24,7 @@ class Slave:
     def fetch_next_task(self):
         url = self.base_url + 'pairOut/?key=Next+Task'
 
-        print('Getting next task ... ', end='')
+        print('PID {}: Getting next task ... '.format(os.getpid()), end='')
         response = requests.get(url)
 
         if response.status_code in (HTTP_200_OK, HTTP_404_NOT_FOUND):
@@ -45,7 +46,8 @@ class Slave:
         key = 'Element' + str(coordinates[1]) + str(coordinates[0])
         pair = {'key': key, 'value': result}
 
-        print('Sending result {} to {} ... ' .format(key, url), end='')
+        print('PID {}: Sending result {} to {} ... '
+              .format(os.getpid(), key, url), end='')
         response = requests.post(url, json=pair)
 
         if response.status_code == HTTP_201_CREATED:
@@ -105,7 +107,8 @@ class Slave:
         vector_url = self._get_vector_url(index, first_operand)
         response = requests.get(vector_url)
 
-        print('Getting vector {} ...'.format(vector_url[-2:]), end='')
+        print('PID {}: Getting vector {} ...'
+              .format(os.getpid(), vector_url[-2:]), end='')
         if response.status_code == HTTP_200_OK:
             print('ok')
         else:
