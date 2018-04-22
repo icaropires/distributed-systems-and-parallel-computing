@@ -34,6 +34,22 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="readPairRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="key" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="readPairResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="value" type="tns:operation"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:complexType name="operation">
         <xs:choice>
             <xs:element name="column" type="xs:integer" minOccurs="0" maxOccurs="unbounded" />

@@ -24,12 +24,19 @@ public class PairRepository {
         return key;
     }
 
-    public Operation removePair(String key) {
+    public synchronized Operation removePair(String key) {
         LinkedList<Operation> operations = pairs.get(key);
         Operation operation = operations.pop();
         if(operations.isEmpty()) {
             pairs.remove(key);
         }
+
+        return operation;
+    }
+
+    public Operation getPair(String key) {
+        LinkedList<Operation> operations = pairs.get(key);
+        Operation operation = operations.element();
 
         return operation;
     }
