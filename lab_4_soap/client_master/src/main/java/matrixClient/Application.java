@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -26,42 +25,80 @@ public class Application {
     CommandLineRunner lookup(PairClient pairClient) {
         return args -> {
             Scanner input = new Scanner(System.in);
-            String[] inputMatrixASize = input.nextLine().split(" ");
-            String[] inputMatrixBSize = input.nextLine().split(" ");
 
+            String[] inputMatrixASize = getMatrixASize(input);
+            String[] inputMatrixBSize = getMatrixBSize(input);
 
             readInputOfMatrices(pairClient, inputMatrixASize, inputMatrixBSize, input);
 
-            Integer matrixANumberOfLines = Integer.parseInt(inputMatrixASize[0]);
-            Integer matrixBNumberOfColumns = Integer.parseInt(inputMatrixBSize[1]);
+            generateTasks(pairClient, inputMatrixASize, inputMatrixBSize);
 
-            for (int i = 1; i <= matrixANumberOfLines; i++) {
-                for (int j = 1; j <= matrixBNumberOfColumns ; j++) {
-                    Operation operation = new Operation();
-                    operation.getCoordinates().add(BigInteger.valueOf(i));
-                    operation.getCoordinates().add(BigInteger.valueOf(j));
-                    pairClient.pairIn("nexttask", operation);
+
+            ArrayList<ArrayList<BigInteger>> result = getCalculatedResult(pairClient, 
+                                                                            inputMatrixASize, 
+                                                                            inputMatrixBSize);
+
+
+            for (int i = 0; i < result.size(); i++) {
+                for (int j = 0; j < result.get(i).size(); j++) {
+                    System.out.print(result.get(i).get(j) + " ");
                 }
-            }
-
-
-            while(true) {
-                for (int i = 1; i <= matrixANumberOfLines; i++) {
-                    for (int j = 1; j <= matrixBNumberOfColumns ; j++) {
-                        PairOutResponse response = null;
-                        try {
-                            response = pairClient.pairOut("Element"+i+j);
-                        }
-                        catch (SoapFaultClientException ex) {
-                            continue;
-                        }
-                        Operation operation = response.getValue();
-                        System.out.println(operation.getCalculated());
-                    }
-                }
+                System.out.println();
             }
 
         };
+    }
+
+    private ArrayList<ArrayList<BigInteger>> getCalculatedResult(PairClient pairClient, String[] inputMatrixASize, String[] inputMatrixBSize) {
+        Integer matrixANumberOfLines = Integer.parseInt(inputMatrixASize[0]);
+        Integer matrixBNumberOfColumns = Integer.parseInt(inputMatrixBSize[1]);
+        ArrayList<ArrayList<BigInteger>> resultMatrix = new ArrayList<>();
+        while(true) {
+            for (int i = 1; i <= matrixANumberOfLines; i++) {
+                ArrayList<BigInteger> line = new ArrayList<>();
+                for (int j = 1; j <= matrixBNumberOfColumns ; j++) {
+                    PairOutResponse response = null;
+                    try {
+                        response = pairClient.pairOut("Element"+i+j);
+                    }
+                    catch (SoapFaultClientException ex) {
+                        continue;
+                    }
+                    Operation operation = response.getValue();
+                    line.add(j-1, operation.getCalculated());
+                }
+                resultMatrix.add(i-1, line);
+                if(resultMatrix.size() == matrixANumberOfLines)
+                    return resultMatrix;
+            }
+        }
+    }
+
+    private String[] getMatrixBSize(Scanner input) {
+        System.out.println("-------------------");
+        System.out.println("Digite o tamanho da matriz B (Linhas Colunas): ");
+        return input.nextLine().split(" ");
+    }
+
+    private String[] getMatrixASize(Scanner input) {
+        System.out.println();
+        System.out.println();
+        System.out.println("-------------------");
+        System.out.println("Digite o tamanho da matriz A (Linhas Colunas): ");
+        return input.nextLine().split(" ");
+    }
+
+    private void generateTasks(PairClient pairClient, String[] inputMatrixASize,  String[] inputMatrixBSize) {
+        Integer matrixANumberOfLines = Integer.parseInt(inputMatrixASize[0]);
+        Integer matrixBNumberOfColumns = Integer.parseInt(inputMatrixBSize[1]);
+        for (int i = 1; i <= matrixANumberOfLines; i++) {
+            for (int j = 1; j <= matrixBNumberOfColumns ; j++) {
+                Operation operation = new Operation();
+                operation.getCoordinates().add(BigInteger.valueOf(i));
+                operation.getCoordinates().add(BigInteger.valueOf(j));
+                pairClient.pairIn("nexttask", operation);
+            }
+        }
     }
 
     private void readInputOfMatrices(PairClient pairClient,
@@ -78,7 +115,7 @@ public class Application {
             System.out.println("NÃO PODE SER MULTIPLICADO");
         }
         else {
-            System.out.println("DIGITE AS " + matrixANumberOfLines + " LINHAS DA MATRIX A");
+            System.out.println("Digite as " + matrixANumberOfLines + " linhas da matriz A");
 
             for (int i = 0; i < matrixANumberOfLines; i++) {
                 Operation operation = new Operation();
@@ -88,7 +125,7 @@ public class Application {
                 pairClient.pairIn("A" + (i+1), operation);
             }
 
-            System.out.println("DIGITE AS " + matrixBNumberOfColumns + " COLUNAS DA MATRIX B");
+            System.out.println("Digite as " + matrixBNumberOfColumns + " colunas da matriz B");
 
             for (int i = 0; i < matrixBNumberOfColumns; i++) {
                 Operation operation = new Operation();
