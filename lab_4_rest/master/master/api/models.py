@@ -2,7 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 # (100 elements + 2 brackets) per row * 100 rows
-MATRIX_SIZE = 10200
+MAX_MATRIX_SIZE = 10200
 
 
 def validate_matrix(string_matrix):
@@ -31,7 +31,7 @@ class Matrix(models.Model):
     )
 
     matrix = models.CharField(
-        max_length=MATRIX_SIZE,
+        max_length=MAX_MATRIX_SIZE,
         validators=[validate_matrix]
     )
 

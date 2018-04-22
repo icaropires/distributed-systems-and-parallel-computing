@@ -1,6 +1,5 @@
 from sys import stderr
 from functools import reduce
-import time
 from django.core.management.base import BaseCommand, CommandError
 from django.core.validators import ValidationError
 from rest_framework import status
