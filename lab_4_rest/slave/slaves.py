@@ -1,3 +1,4 @@
+import time
 from slave import Slave
 
 
@@ -16,5 +17,6 @@ if __name__ == '__main__':
             slave.process_task(task)
             print()
         else:
-            print('Stopping slave, no more tasks.')
-            break
+            print()
+            print('No tasks found! Sleeping for 2 second...')
+            time.sleep(2)
