@@ -13,7 +13,7 @@ def validate_matrix(string_matrix):
 
     matrix = None
     try:
-        matrix = Matrix.get_object_matrix(string_matrix)
+        matrix = Matrix._get_object_matrix(string_matrix)
     except ValueError:
         raise validation_exception
 
@@ -36,7 +36,7 @@ class Matrix(models.Model):
     )
 
     def get_matrix(self):
-        return self.get_object_matrix(self.matrix)
+        return self._get_object_matrix(self.matrix)
 
     @property
     def width(self):
@@ -49,7 +49,7 @@ class Matrix(models.Model):
         return len(matrix)
 
     @staticmethod
-    def get_object_matrix(string_matrix):
+    def _get_object_matrix(string_matrix):
         string_matrix = string_matrix.split('][')
 
         string_matrix[0] = string_matrix[0][1:]

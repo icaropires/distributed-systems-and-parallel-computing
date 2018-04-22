@@ -44,8 +44,8 @@ class Command(BaseCommand):
         print('Separe os elementos por espaço.'
               ' Use uma linha em branco para finalizar a inserção')
 
-        matrix = Command.get_matrix()
-        matrix = Command.matrix_to_string(matrix)
+        matrix = Command._get_matrix()
+        matrix = Command._matrix_to_string(matrix)
 
         try:
             matrix = Matrix.objects.create(name=name, matrix=matrix)
@@ -55,7 +55,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def multiply_matrixes():
-        matrix_a_name, matrix_b_name = Command.get_chosen_matrixes()
+        matrix_a_name, matrix_b_name = Command._get_chosen_matrixes()
 
         try:
             matrix_a = Matrix.objects.get(name=matrix_a_name)
@@ -65,16 +65,74 @@ class Command(BaseCommand):
 
         print()
         if matrix_a.width == matrix_b.height:
-            Command.upload_matrix(matrix_a, first_operand=True)
-            Command.upload_matrix(matrix_b, first_operand=False)
+            Command._upload_matrix(matrix_a, first_operand=True)
+            Command._upload_matrix(matrix_b, first_operand=False)
         else:
             raise AttributeError("Incompatible matrixes for multiplication")
 
         print()
-        Command.upload_tasks(matrix_a, matrix_b)
+        Command._upload_tasks(matrix_a, matrix_b)
+
+        result_matrix = Command._gather_result_matrix(
+            matrix_a.height, matrix_b.width
+        )
+
+        print()
+        print('============================================================')
+        print('MATRIX RESULTADO')
+        print('============================================================')
+        Command._print_matrix(result_matrix)
+        print('------------------------------------------------------------')
 
     @staticmethod
-    def upload_matrix(matrix, first_operand=True):
+    def _gather_result_matrix(width, height):
+        missing_elements = ['Element' + str(i) + str(j) for i in
+                            range(height) for j in range(width)]
+
+        result_matrix, k = [['-'] * width for _ in range(height)], 0
+
+        while missing_elements:
+            result, status_code = Command._receive_result(missing_elements[k])
+
+            if status_code != status.HTTP_404_NOT_FOUND:
+                i, j = int(result['key'][-2]), int(result['key'][-1])
+                result_matrix[i][j] = result['value']
+
+                del missing_elements[k]
+                Command._print_matrix(result_matrix)
+
+            k = k + 1 if k < len(missing_elements) - 1 else 0
+
+        return result_matrix
+
+    @staticmethod
+    def _print_matrix(matrix):
+        for line in matrix:
+            print(line)
+
+    @staticmethod
+    def _receive_result(element_name):
+        url = REPOSITORY_BASE_URL + 'pairOut/?key=' + element_name
+
+        i, j = int(url[-1]), int(url[-2])
+        print('\nGetting element ({}, {}) result... '.format(i, j), end='')
+        response = requests.get(url)
+
+        result = None
+        if (response.status_code in
+                (status.HTTP_200_OK, status.HTTP_404_NOT_FOUND)):
+            if response.status_code == status.HTTP_200_OK:
+                result = response.json()
+                print('ok')
+            else:
+                print('Not Found')
+        else:
+            raise CommandError("Couldn't get result.")
+
+        return result, response.status_code
+
+    @staticmethod
+    def _upload_matrix(matrix, first_operand=True):
         prepared_matrix, prefix_key_name = [], ''
 
         if first_operand:
@@ -82,20 +140,20 @@ class Command(BaseCommand):
             prepared_matrix = matrix.get_matrix()
         else:
             prefix_key_name = 'B'
-            prepared_matrix = Command.transpose_matrix(matrix.get_matrix())
+            prepared_matrix = Command._transpose_matrix(matrix.get_matrix())
 
         url_pair_in = REPOSITORY_BASE_URL + 'pairIn/'
         for index, vector in enumerate(prepared_matrix):
-            Command.post_vector(vector, url_pair_in, prefix_key_name, index)
+            Command._post_vector(vector, url_pair_in, prefix_key_name, index)
 
     @staticmethod
-    def upload_tasks(matrix_a, matrix_b):
+    def _upload_tasks(matrix_a, matrix_b):
         for i in range(matrix_a.height):
             for j in range(matrix_b.width):
-                Command.addTask(i, j)
+                Command._addTask(i, j)
 
     @staticmethod
-    def addTask(i, j):
+    def _addTask(i, j):
         url = REPOSITORY_BASE_URL + 'pairIn/'
         pair = {'key': 'Next Task', 'value': '{},{}'.format(i, j)}
 
@@ -109,14 +167,14 @@ class Command(BaseCommand):
                                .format(response.text))
 
     @staticmethod
-    def matrix_to_string(matrix):
+    def _matrix_to_string(matrix):
         matrix = [str(row) for row in matrix]
         matrix = reduce(lambda x, y: x + y, matrix)
 
         return matrix
 
     @staticmethod
-    def get_matrix():
+    def _get_matrix():
         matrix = []
         while True:
             row = input()
@@ -129,7 +187,7 @@ class Command(BaseCommand):
         return matrix
 
     @staticmethod
-    def get_chosen_matrixes():
+    def _get_chosen_matrixes():
         matrixes_names = [matrix.name for matrix in Matrix.objects.all()]
 
         print()
@@ -146,7 +204,7 @@ class Command(BaseCommand):
         return matrix_a, matrix_b
 
     @staticmethod
-    def transpose_matrix(matrix):
+    def _transpose_matrix(matrix):
         transposed_matrix = []
         for i in range(len(matrix[0])):
             transposed_matrix += [[line[i] for line in matrix]]
@@ -154,7 +212,7 @@ class Command(BaseCommand):
         return transposed_matrix
 
     @staticmethod
-    def post_vector(vector, url, prefix_key_name, index):
+    def _post_vector(vector, url, prefix_key_name, index):
         pair = {'key': prefix_key_name + str(index), 'value': str(vector)}
         vector_name = prefix_key_name + str(index)
 
