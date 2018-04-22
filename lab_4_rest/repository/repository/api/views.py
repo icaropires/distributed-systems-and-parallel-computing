@@ -38,6 +38,13 @@ class PairViewSet(viewsets.ModelViewSet):
 
         return Response(serialized_data.errors, status.HTTP_400_BAD_REQUEST)
 
+    @action(methods=['delete'], detail=False)
+    def cleanDatabase(self, request, pk=None):
+        for pair in Pair.objects.all():
+            pair.delete()
+
+        return Response({'status': 'cleaned!'}, status.HTTP_204_NO_CONTENT)
+
     def _get_get_pair_reponse(self, request):
         try:
             data = self._get_pair_data(request)

@@ -19,12 +19,16 @@ class Command(BaseCommand):
             print('Insira a opção desejada:')
             print('1. Registrar matriz')
             print('2. Multiplicar matrizes')
+            print('3. Limpar banco de matrizes')
+            print('4. Limpar dados do repositório')
             print('Qualquer outra coisa para sair')
 
             selection = input()
             options = {
                 '1': self.register_matrix,
                 '2': self.multiply_matrixes,
+                '3': self.clean_local_database,
+                '4': self.clean_repository,
             }
 
             selected_option = options.get(selection, None)
@@ -83,6 +87,23 @@ class Command(BaseCommand):
         print('============================================================')
         Command._print_matrix(result_matrix)
         print('------------------------------------------------------------')
+
+    @staticmethod
+    def clean_local_database():
+        for matrix in Matrix.objects.all():
+            matrix.delete()
+
+        print('Local database cleaned')
+
+    @staticmethod
+    def clean_repository():
+        url = REPOSITORY_BASE_URL + 'cleanDatabase/'
+        response = requests.delete(url)
+
+        if response.status_code == status.HTTP_204_NO_CONTENT:
+            print('\nRepository cleaned successfully!')
+        else:
+            raise AttributeError("Couldn't clean repository")
 
     @staticmethod
     def _gather_result_matrix(width, height):
