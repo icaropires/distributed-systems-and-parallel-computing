@@ -6,6 +6,7 @@ from slave import Slave
 
 REPOSITORY_BASE_URL = 'http://192.168.182.5:8001/api/'
 HTTP_404_NOT_FOUND = 404
+NUMBER_OF_SLAVES = 10
 
 
 def run_slave(url):
@@ -25,7 +26,6 @@ def run_slave(url):
 
 
 if __name__ == '__main__':
-    NUMBER_OF_SLAVES = 10
     url = REPOSITORY_BASE_URL
 
     for _ in range(NUMBER_OF_SLAVES):

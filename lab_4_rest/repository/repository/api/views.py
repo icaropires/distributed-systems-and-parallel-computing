@@ -17,7 +17,10 @@ class PairViewSet(viewsets.ModelViewSet):
 
         if response.status_code == status.HTTP_200_OK:
             pairs = self.queryset.filter(key=request.query_params['key'])
-            pairs.last().delete()
+            try:
+                pairs.last().delete()
+            except AttributeError:  # Was deleted before, someone took it
+                response = Response(None, status.HTTP_404_NOT_FOUND)
 
         return response
 

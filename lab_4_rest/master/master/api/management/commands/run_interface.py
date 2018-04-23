@@ -113,17 +113,27 @@ class Command(BaseCommand):
 
         while missing_elements:
             result, status_code = Command._receive_result(missing_elements[k])
+            i, j = int(missing_elements[k][-2]), int(missing_elements[k][-1])
 
             if status_code != status.HTTP_404_NOT_FOUND:
-                i, j = int(result['key'][-2]), int(result['key'][-1])
                 result_matrix[i][j] = result['value']
 
                 del missing_elements[k]
                 Command._print_matrix(result_matrix)
+            else:
+                Command.handle_not_found(i, j)
 
             k = k + 1 if k < len(missing_elements) - 1 else 0
 
         return result_matrix
+
+    @staticmethod
+    def handle_not_found(i, j):
+        url = REPOSITORY_BASE_URL + 'readPair/?key=Next+Task'
+        response = requests.get(url)
+
+        if response.status_code == status.HTTP_404_NOT_FOUND:
+            Command._add_task(i, j)
 
     @staticmethod
     def _print_matrix(matrix):
@@ -134,7 +144,7 @@ class Command(BaseCommand):
     def _receive_result(element_name):
         url = REPOSITORY_BASE_URL + 'pairOut/?key=' + element_name
 
-        i, j = int(url[-1]), int(url[-2])
+        i, j = int(url[-2]), int(url[-1])
         print('\nGetting element ({}, {}) result... '.format(i, j), end='')
         response = requests.get(url)
 
@@ -170,10 +180,10 @@ class Command(BaseCommand):
     def _upload_tasks(matrix_a, matrix_b):
         for i in range(matrix_a.height):
             for j in range(matrix_b.width):
-                Command._addTask(i, j)
+                Command._add_task(i, j)
 
     @staticmethod
-    def _addTask(i, j):
+    def _add_task(i, j):
         url = REPOSITORY_BASE_URL + 'pairIn/'
         pair = {'key': 'Next Task', 'value': '{},{}'.format(i, j)}
 

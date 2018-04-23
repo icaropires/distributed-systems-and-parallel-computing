@@ -43,7 +43,7 @@ class Slave:
     def _post_result(self, coordinates, result):
         url = self.base_url + 'pairIn/'
 
-        key = 'Element' + str(coordinates[1]) + str(coordinates[0])
+        key = 'Element' + str(coordinates[0]) + str(coordinates[1])
         pair = {'key': key, 'value': result}
 
         print('PID {}: Sending result {} to {} ... '
@@ -67,9 +67,9 @@ class Slave:
         return result_sum
 
     def _get_vectors(self, coordinates):
-        string_vector_a = self._fetch_vector(coordinates[1],
+        string_vector_a = self._fetch_vector(coordinates[0],
                                              first_operand=True)
-        string_vector_b = self._fetch_vector(coordinates[0],
+        string_vector_b = self._fetch_vector(coordinates[1],
                                              first_operand=False)
 
         vector_a = self._get_object_vector(string_vector_a)
