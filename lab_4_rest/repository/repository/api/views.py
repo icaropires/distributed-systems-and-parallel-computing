@@ -17,7 +17,10 @@ class PairViewSet(viewsets.ModelViewSet):
 
         if response.status_code == status.HTTP_200_OK:
             pairs = self.queryset.filter(key=request.query_params['key'])
-            pairs.last().delete()
+            try:
+                pairs.last().delete()
+            except AttributeError:  # Was deleted before, someone took it
+                response = Response(None, status.HTTP_404_NOT_FOUND)
 
         return response
 
@@ -37,6 +40,13 @@ class PairViewSet(viewsets.ModelViewSet):
             return Response({'status': data}, status.HTTP_201_CREATED)
 
         return Response(serialized_data.errors, status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['delete'], detail=False)
+    def cleanDatabase(self, request, pk=None):
+        for pair in Pair.objects.all():
+            pair.delete()
+
+        return Response({'status': 'cleaned!'}, status.HTTP_204_NO_CONTENT)
 
     def _get_get_pair_reponse(self, request):
         try:

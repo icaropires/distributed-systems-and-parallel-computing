@@ -2,7 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 # (100 elements + 2 brackets) per row * 100 rows
-MATRIX_SIZE = 10200
+MAX_MATRIX_SIZE = 10200
 
 
 def validate_matrix(string_matrix):
@@ -13,7 +13,7 @@ def validate_matrix(string_matrix):
 
     matrix = None
     try:
-        matrix = Matrix.get_object_matrix(string_matrix)
+        matrix = Matrix._get_object_matrix(string_matrix)
     except ValueError:
         raise validation_exception
 
@@ -31,12 +31,12 @@ class Matrix(models.Model):
     )
 
     matrix = models.CharField(
-        max_length=MATRIX_SIZE,
+        max_length=MAX_MATRIX_SIZE,
         validators=[validate_matrix]
     )
 
     def get_matrix(self):
-        return self.get_object_matrix(self.matrix)
+        return self._get_object_matrix(self.matrix)
 
     @property
     def width(self):
@@ -49,7 +49,7 @@ class Matrix(models.Model):
         return len(matrix)
 
     @staticmethod
-    def get_object_matrix(string_matrix):
+    def _get_object_matrix(string_matrix):
         string_matrix = string_matrix.split('][')
 
         string_matrix[0] = string_matrix[0][1:]
