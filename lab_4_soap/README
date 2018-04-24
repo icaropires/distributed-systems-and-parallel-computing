@@ -1,3 +1,8 @@
+Dependências
+
+Java 8
+Maven
+
 Para executar o lab soap
 
 $ cd server/
