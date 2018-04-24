@@ -13,7 +13,7 @@ class PairViewSet(viewsets.ModelViewSet):
 
     @action(methods=['get'], detail=False)
     def pairOut(self, request, pk=None):
-        response = self._get_get_pair_reponse(request)
+        response = self._get_get_pair_response(request)
 
         if response.status_code == status.HTTP_200_OK:
             pairs = self.queryset.filter(key=request.query_params['key'])
@@ -26,7 +26,7 @@ class PairViewSet(viewsets.ModelViewSet):
 
     @action(methods=['get'], detail=False)
     def readPair(self, request, pk=None):
-        response = self._get_get_pair_reponse(request)
+        response = self._get_get_pair_response(request)
 
         return response
 
@@ -48,7 +48,7 @@ class PairViewSet(viewsets.ModelViewSet):
 
         return Response({'status': 'cleaned!'}, status.HTTP_204_NO_CONTENT)
 
-    def _get_get_pair_reponse(self, request):
+    def _get_get_pair_response(self, request):
         try:
             data = self._get_pair_data(request)
 
