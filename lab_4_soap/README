@@ -1,7 +1,7 @@
 Dependências
 
 Java 8
-Maven
+Maven (MacOS brew install maven / Ubuntu apt-get install mvn)
 
 Para executar o lab soap
 
