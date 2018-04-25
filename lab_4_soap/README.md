@@ -1,6 +1,6 @@
 ## Dependências
 * Java 8
-* Maven
+* Maven (MacOS - brew install maven / Ubuntu - apt-get install mvn)
 
 ## Execução
 * Execute:
